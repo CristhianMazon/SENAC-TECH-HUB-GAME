@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Protótipo de Jogo: SENAC Tech Collector</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.90.0/phaser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div id="cadastro-container" class="screen-container">
+        <div class="box-style">
+            <h2>SENAC Tech Collector</h2>
+            <p>Preencha os seus dados para começar a jogar!</p>
+            <form id="cadastro-form">
+                <input type="text" id="nome" placeholder="Nome Completo" required>
+                <input type="email" id="email" placeholder="E-mail" required>
+                <input type="tel" id="telefone" placeholder="Telefone" required>
+                <button type="submit">Avançar</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="instrucoes-container" class="screen-container hidden">
+        <div class="box-style">
+            <h2>Como Jogar</h2>
+            <ul id="instrucoes-lista">
+                </ul>
+            <button id="start-game-button">Começar a Jogar!</button>
+        </div>
+    </div>
+
+    <div id="jogo-container" class="screen-container hidden">
+        <div id="info-usuario" class="game-ui">
+            Jogador: <span id="nome-usuario"></span>
+        </div>
+        <div id="score-display" class="game-ui">
+            Pontos: <span id="pontuacao-valor">0</span>
+        </div>
+        <div id="timer-display" class="game-ui">
+            Tempo: <span id="timer-valor">60</span>
+        </div>
+        <div id="mute-button" class="game-ui">
+            🔊
+        </div>
+    </div>
+    
+    <script src="js/script.js"></script>
+</body>
+</html>

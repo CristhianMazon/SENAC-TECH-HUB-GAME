@@ -1,0 +1,131 @@
+/* Estilos CSS para o protótipo */
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    font-family: 'Poppins', sans-serif;
+    background-color: #1a1a2e;
+    overflow: hidden;
+}
+
+.screen-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: #003b6f;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23004a80' fill-opacity='0.4'%3E%3Cpath d='M0 38.59l2.83-2.83 1.41 1.41L1.41 40H0v-1.41zM0 1.4l2.83 2.83 1.41-1.41L1.41 0H0v1.41zM38.59 40l-2.83-2.83 1.41-1.41L40 38.59V40h-1.41zM40 1.41l-2.83 2.83-1.41-1.41L38.59 0H40v1.41zM20 18.6l2.83-2.83 1.41 1.41L21.41 20l2.83 2.83-1.41 1.41L20 21.41l-2.83 2.83-1.41-1.41L18.59 20l-2.83-2.83 1.41-1.41L20 18.59z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    transition: opacity 0.5s ease-out;
+    opacity: 1;
+    z-index: 200; /* Garante que as telas de UI fiquem por cima */
+}
+
+.screen-container.hidden {
+    display: none;
+}
+
+.box-style {
+    background-color: rgba(255, 255, 255, 0.98);
+    padding: 30px 40px;
+    border-radius: 12px;
+    box-shadow: 0 5px 25px rgba(0, 169, 224, 0.2);
+    border: 1px solid #00a9e0;
+    text-align: center;
+    width: 90%;
+    max-width: 450px;
+}
+
+.box-style h2 {
+    color: #004a80;
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.box-style p {
+    color: #333;
+    margin-bottom: 25px;
+}
+
+.box-style input {
+    width: calc(100% - 22px);
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+}
+
+.box-style button {
+    width: 100%;
+    padding: 12px;
+    background-color: #00a9e0;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+}
+
+.box-style button:hover {
+    background-color: #004a80;
+    color: white;
+}
+
+#instrucoes-lista {
+    list-style: none;
+    padding: 0;
+    text-align: left;
+}
+#instrucoes-lista li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    font-size: 18px;
+}
+#instrucoes-lista img {
+    width: 40px;
+    height: 40px;
+    margin-right: 15px;
+    object-fit: contain;
+}
+
+#jogo-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.game-ui {
+    position: absolute;
+    padding: 10px 15px;
+    background-color: rgba(0, 59, 111, 0.8);
+    border: 1px solid #00a9e0;
+    color: white;
+    border-radius: 8px;
+    font-size: 16px;
+    z-index: 100;
+    text-shadow: 1px 1px 2px black;
+}
+
+#info-usuario { top: 15px; right: 15px; }
+#score-display { top: 15px; left: 15px; }
+#timer-display { top: 60px; left: 15px; }
+
+#mute-button {
+    top: 105px;
+    left: 15px;
+    cursor: pointer;
+    font-size: 24px;
+    padding: 5px 12px;
+}
