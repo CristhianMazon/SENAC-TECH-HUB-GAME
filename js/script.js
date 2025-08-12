@@ -42,9 +42,11 @@ function preencherInstrucoes() {
 
     const itens = [
         { asset: 'assets/Monitor.png', text: '+10 Pontos' },
+        { asset: 'assets/Mouse.png', text: '+10 Pontos' },
+        { asset: 'assets/Teclado.png', text: '+10 Pontos' },
         { asset: 'assets/LogoSenac.png', text: '+20 Pontos (Bónus!)' },
         { asset: 'assets/Relogio.png', text: '+5 Segundos' },
-        { asset: 'assets/Virus jogo.png', text: '-15 Pontos (Cuidado!)' }
+        { asset: 'assets/Virusjogo.png', text: '-15 Pontos (Cuidado!)' }
     ];
 
     itens.forEach(item => {
@@ -103,15 +105,13 @@ function iniciarJogo() {
     const game = new Phaser.Game(config);
 
     function preload() {
-        // Carrega as imagens dos itens do jogo da pasta assets
         this.load.image('computador', 'assets/Monitor.png');
         this.load.image('mouse', 'assets/Mouse.png');
         this.load.image('teclado', 'assets/Teclado.png');
         this.load.image('senac', 'assets/LogoSenac.png');
         this.load.image('relogio', 'assets/Relogio.png');
-        this.load.image('virus', 'assets/Virus jogo.png');
+        this.load.image('virus', 'assets/Virusjogo.png'); // Nome corrigido para corresponder ao arquivo
 
-        // Cria uma textura de partícula simples para os efeitos
         let graphics = this.make.graphics({x: 0, y: 0, add: false});
         graphics.fillStyle(0x00a9e0, 1);
         graphics.fillCircle(5, 5, 5);
@@ -196,41 +196,54 @@ function iniciarJogo() {
     }
 }
 
-
 function criarItem(scene, itemsGroup, bonusGroup, badItemGroup, itemTypes, pontuacao) {
     const x = Phaser.Math.Between(50, scene.cameras.main.width - 50);
     const chance = Phaser.Math.Between(1, 20);
 
     let item;
     let textureKey;
-    let scale = 0.5; // Fator de escala padrão para ajustar o tamanho se necessário
+    let scale;
 
     if (chance <= 2) {
         textureKey = 'senac';
-        item = bonusGroup.create(x, -50, textureKey);
-        scale = 0.6;
     } else if (chance <= 4) {
         textureKey = 'relogio';
-        item = bonusGroup.create(x, -50, textureKey);
-         scale = 0.2;
     } else if (chance <= 7) {
         textureKey = 'virus';
-        item = badItemGroup.create(x, -50, textureKey);
-        scale = 0.3;
     } else {
         textureKey = Phaser.Math.RND.pick(itemTypes);
-        item = itemsGroup.create(x, -50, textureKey);
-        if (textureKey === 'computador') scale = 0.3;
-        if (textureKey === 'mouse') scale = 0.3; // Ajustado para melhor visualização
-        if (textureKey === 'teclado') scale = 0.4;
+    }
+
+    // Lógica de criação e escala centralizada e organizada
+    switch (textureKey) {
+        case 'computador':
+            scale = 0.5;
+            item = itemsGroup.create(x, -50, textureKey);
+            break;
+        case 'mouse':
+            scale = 0.5;
+            item = itemsGroup.create(x, -50, textureKey);
+            break;
+        case 'teclado':
+            scale = 0.6;
+            item = itemsGroup.create(x, -50, textureKey);
+            break;
+        case 'senac':
+            scale = 0.8;
+            item = bonusGroup.create(x, -50, textureKey);
+            break;
+        case 'relogio':
+            scale = 0.4;
+            item = bonusGroup.create(x, -50, textureKey);
+            break;
+        case 'virus':
+            scale = 0.5;
+            item = badItemGroup.create(x, -50, textureKey);
+            break;
     }
 
     item.setScale(scale);
-
-    // O Phaser ajusta a hitbox ao usar setScale em um corpo de física Arcade.
-    // Se a hitbox ainda parecer incorreta, você pode redimensioná-la manualmente assim:
     item.body.setSize(item.width, item.height);
-
 
     let currentVelocity = 150 + (pontuacao * 1.5);
     item.setVelocityY(Math.min(currentVelocity, 800));
