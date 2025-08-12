@@ -221,23 +221,23 @@ function criarItem(scene, itemsGroup, bonusGroup, badItemGroup, itemTypes, pontu
             item = itemsGroup.create(x, -50, textureKey);
             break;
         case 'mouse':
-            scale = 0.1;
+            scale = 0.05;
             item = itemsGroup.create(x, -50, textureKey);
             break;
         case 'teclado':
-            scale = 0.6;
+            scale = 0.4;
             item = itemsGroup.create(x, -50, textureKey);
             break;
         case 'senac':
-            scale = 0.5;
+            scale = 0.3;
             item = bonusGroup.create(x, -50, textureKey);
             break;
         case 'relogio':
-            scale = 0.1;
+            scale = 0.05;
             item = bonusGroup.create(x, -50, textureKey);
             break;
         case 'virus':
-            scale = 0.5;
+            scale = 0.3;
             item = badItemGroup.create(x, -50, textureKey);
             break;
     }
