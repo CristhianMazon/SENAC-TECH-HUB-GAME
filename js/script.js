@@ -11,10 +11,10 @@ const muteButton = document.getElementById('mute-button');
 let isMuted = false;
 
 cadastroForm.addEventListener('submit', function(event) {
-    event.preventDefault(); 
+    event.preventDefault();
     const nome = document.getElementById('nome').value;
     nomeUsuarioSpan.textContent = nome.split(' ')[0];
-    
+
     if (Tone.context.state !== 'running') {
         Tone.start();
     }
@@ -38,43 +38,25 @@ muteButton.addEventListener('click', () => {
 
 function preencherInstrucoes() {
     const lista = document.getElementById('instrucoes-lista');
-    const itens = [
-        { texture: 'computador', text: '+10 Pontos' },
-        { texture: 'senac', text: '+20 Pontos (Bónus!)' },
-        { texture: 'relogio', text: '+5 Segundos' },
-        { texture: 'virus', text: '-15 Pontos (Cuidado!)' }
-    ];
-    
-    // Usa um jogo Phaser com renderizador CANVAS (em vez de HEADLESS) para gerar as texturas de forma segura.
-    const tempGame = new Phaser.Game({
-        type: Phaser.CANVAS,
-        width: 1,
-        height: 1,
-        parent: document.createElement('div'), // Previne que o canvas seja adicionado à página principal
-        scene: {
-            create: function() {
-                generateShapeTextures(this);
+    lista.innerHTML = ''; // Limpa a lista antes de adicionar os itens
 
-                lista.innerHTML = ''; // Limpa a lista
-                itens.forEach(item => {
-                    const li = document.createElement('li');
-                    const img = document.createElement('img');
-                    const texture = this.textures.get(item.texture);
-                    if (texture && texture.key !== '__DEFAULT') {
-                        // Usa getBase64 para extrair a imagem da textura gerada
-                        img.src = this.textures.getBase64(item.texture);
-                    }
-                    li.appendChild(img);
-                    li.append(item.text);
-                    lista.appendChild(li);
-                });
-                
-                // Destrói a instância temporária do jogo para libertar memória
-                setTimeout(() => this.game.destroy(true), 100);
-            }
-        }
+    const itens = [
+        { asset: 'assets/Monitor.png', text: '+10 Pontos' },
+        { asset: 'assets/LogoSenac.png', text: '+20 Pontos (Bónus!)' },
+        { asset: 'assets/Relogio.png', text: '+5 Segundos' },
+        { asset: 'assets/Virus jogo.png', text: '-15 Pontos (Cuidado!)' }
+    ];
+
+    itens.forEach(item => {
+        const li = document.createElement('li');
+        const img = document.createElement('img');
+        img.src = item.asset;
+        li.appendChild(img);
+        li.append(item.text);
+        lista.appendChild(li);
     });
 }
+
 
 // --- Lógica do Jogo com Phaser ---
 function iniciarJogo() {
@@ -92,7 +74,7 @@ function iniciarJogo() {
         sounds.music.triggerAttackRelease("G2", "8n", time + 0.5);
         sounds.music.triggerAttackRelease("A#2", "8n", time + 1);
     }, "1n").start(0);
-    
+
     Tone.Transport.start();
 
     const sceneConfig = {
@@ -120,23 +102,34 @@ function iniciarJogo() {
 
     const game = new Phaser.Game(config);
 
-    function preload() {}
+    function preload() {
+        // Carrega as imagens dos itens do jogo da pasta assets
+        this.load.image('computador', 'assets/Monitor.png');
+        this.load.image('mouse', 'assets/Mouse.png');
+        this.load.image('teclado', 'assets/Teclado.png');
+        this.load.image('senac', 'assets/LogoSenac.png');
+        this.load.image('relogio', 'assets/Relogio.png');
+        this.load.image('virus', 'assets/Virus jogo.png');
+
+        // Cria uma textura de partícula simples para os efeitos
+        let graphics = this.make.graphics({x: 0, y: 0, add: false});
+        graphics.fillStyle(0x00a9e0, 1);
+        graphics.fillCircle(5, 5, 5);
+        graphics.generateTexture('particle', 10, 10);
+        graphics.destroy();
+    }
 
     function create() {
         this.pontuacao = 0;
         this.tempoRestante = 60;
         this.stats = { computador: 0, mouse: 0, teclado: 0, senac: 0, relogio: 0, virus: 0 };
-        
+
         pontuacaoSpan.textContent = this.pontuacao;
         timerSpan.textContent = this.tempoRestante;
 
         if (Tone.Transport.state !== 'started') {
             Tone.Transport.start();
         }
-        
-        generateShapeTextures(this);
-
-        this.add.tileSprite(0, 0, this.cameras.main.width, this.cameras.main.height, 'background_pattern').setOrigin(0, 0).setAlpha(0.1);
 
         this.itemsGroup = this.physics.add.group();
         this.bonusGroup = this.physics.add.group();
@@ -159,7 +152,7 @@ function iniciarJogo() {
                     this.gameTimer.destroy();
                     Tone.Transport.stop();
                     this.sounds.gameOver.triggerAttackRelease("C3", "1n");
-                    
+
                     this.itemsGroup.clear(true, true);
                     this.bonusGroup.clear(true, true);
                     this.badItemGroup.clear(true, true);
@@ -203,119 +196,42 @@ function iniciarJogo() {
     }
 }
 
-function generateShapeTextures(scene) {
-    if (scene.textures.exists('computador')) return;
-    let graphics;
-    const hubColor = 0x00a9e0;
-
-    graphics = scene.make.graphics({x: 0, y: 0, add: false});
-    graphics.fillStyle(0x004a80, 0.4);
-    for (let i = 0; i < 80; i++) {
-        graphics.fillRect(Math.random() * 800, Math.random() * 600, 2, 2);
-    }
-    graphics.generateTexture('background_pattern', 800, 600);
-    graphics.destroy();
-    
-    graphics = scene.make.graphics({x: 0, y: 0, add: false});
-    graphics.fillStyle(0x333333, 1);
-    graphics.fillRoundedRect(0, 0, 60, 45, 5);
-    graphics.fillStyle(hubColor, 1);
-    graphics.fillRect(5, 5, 50, 35);
-    graphics.fillStyle(0x555555, 1);
-    graphics.fillRect(25, 45, 10, 10);
-    graphics.fillStyle(0x00ff00, 1);
-    graphics.fillCircle(55, 40, 2);
-    graphics.generateTexture('computador', 60, 55);
-    graphics.destroy();
-
-    graphics = scene.make.graphics({x: 0, y: 0, add: false});
-    graphics.fillStyle(0xcccccc, 1);
-    graphics.fillEllipse(22, 27, 40, 50);
-    graphics.fillStyle(0xffffff, 1);
-    graphics.fillEllipse(20, 25, 40, 50);
-    graphics.fillStyle(0xaaaaaa, 1);
-    graphics.fillRect(18, 15, 4, 10);
-    graphics.generateTexture('mouse', 44, 54);
-    graphics.destroy();
-    
-    graphics = scene.make.graphics({x: 0, y: 0, add: false});
-    graphics.fillStyle(0x555555, 1);
-    graphics.fillRoundedRect(0, 0, 80, 30, 3);
-    graphics.fillStyle(0xdddddd, 1);
-    for(let i = 0; i < 4; i++) {
-        for(let j = 0; j < 2; j++) {
-            graphics.fillRoundedRect(5 + i * 18, 5 + j * 12, 15, 8, 2);
-        }
-    }
-    graphics.generateTexture('teclado', 80, 30);
-    graphics.destroy();
-
-    graphics = scene.make.graphics({x: 0, y: 0, add: false});
-    graphics.lineStyle(6, hubColor, 1);
-    const path1 = new Phaser.Curves.Path().moveTo(10, 20).lineTo(30, 10).lineTo(50, 20);
-    path1.draw(graphics);
-    const path2 = new Phaser.Curves.Path().moveTo(10, 30).lineTo(30, 20).lineTo(50, 30);
-    path2.draw(graphics);
-    graphics.fillStyle(hubColor, 1);
-    graphics.fillCircle(10, 20, 5);
-    graphics.fillCircle(50, 20, 5);
-    graphics.fillCircle(10, 30, 5);
-    graphics.fillCircle(50, 30, 5);
-    graphics.generateTexture('senac', 60, 40);
-    graphics.destroy();
-    
-    graphics = scene.make.graphics({x: 0, y: 0, add: false});
-    graphics.fillStyle(0xff0000, 1);
-    graphics.fillCircle(25, 25, 20);
-    graphics.lineStyle(4, 0xcc0000, 1);
-    for(let i = 0; i < 8; i++) {
-        const angle = (Math.PI * 2 / 8) * i;
-        graphics.moveTo(25, 25);
-        graphics.lineTo(25 + Math.cos(angle) * 25, 25 + Math.sin(angle) * 25);
-    }
-    graphics.strokePath();
-    graphics.generateTexture('virus', 50, 50);
-    graphics.destroy();
-
-    graphics = scene.make.graphics({x: 0, y: 0, add: false});
-    graphics.fillStyle(0xffff00, 1);
-    graphics.fillCircle(25, 25, 25);
-    graphics.lineStyle(4, 0x333333, 1);
-    graphics.beginPath();
-    graphics.moveTo(25, 25);
-    graphics.lineTo(25, 10);
-    graphics.strokePath();
-    graphics.lineStyle(2, 0x333333, 1);
-    graphics.beginPath();
-    graphics.moveTo(25, 25);
-    graphics.lineTo(40, 25);
-    graphics.strokePath();
-    graphics.generateTexture('relogio', 50, 50);
-    graphics.destroy();
-
-    graphics = scene.make.graphics({x: 0, y: 0, add: false});
-    graphics.fillStyle(hubColor, 1);
-    graphics.fillCircle(5, 5, 5);
-    graphics.generateTexture('particle', 10, 10);
-    graphics.destroy();
-}
 
 function criarItem(scene, itemsGroup, bonusGroup, badItemGroup, itemTypes, pontuacao) {
     const x = Phaser.Math.Between(50, scene.cameras.main.width - 50);
     const chance = Phaser.Math.Between(1, 20);
-    
+
     let item;
+    let textureKey;
+    let scale = 0.5; // Fator de escala padrão para ajustar o tamanho se necessário
+
     if (chance <= 2) {
-        item = bonusGroup.create(x, -50, 'senac');
+        textureKey = 'senac';
+        item = bonusGroup.create(x, -50, textureKey);
+        scale = 0.6;
     } else if (chance <= 4) {
-        item = bonusGroup.create(x, -50, 'relogio');
+        textureKey = 'relogio';
+        item = bonusGroup.create(x, -50, textureKey);
+         scale = 0.2;
     } else if (chance <= 7) {
-        item = badItemGroup.create(x, -50, 'virus');
+        textureKey = 'virus';
+        item = badItemGroup.create(x, -50, textureKey);
+        scale = 0.3;
     } else {
-        const randomItem = Phaser.Math.RND.pick(itemTypes);
-        item = itemsGroup.create(x, -50, randomItem);
+        textureKey = Phaser.Math.RND.pick(itemTypes);
+        item = itemsGroup.create(x, -50, textureKey);
+        if (textureKey === 'computador') scale = 0.3;
+        if (textureKey === 'mouse') scale = 0.3; // Ajustado para melhor visualização
+        if (textureKey === 'teclado') scale = 0.4;
     }
-    
+
+    item.setScale(scale);
+
+    // O Phaser ajusta a hitbox ao usar setScale em um corpo de física Arcade.
+    // Se a hitbox ainda parecer incorreta, você pode redimensioná-la manualmente assim:
+    item.body.setSize(item.width, item.height);
+
+
     let currentVelocity = 150 + (pontuacao * 1.5);
     item.setVelocityY(Math.min(currentVelocity, 800));
     item.setInteractive({ useHandCursor: true });
@@ -327,9 +243,9 @@ function itemColetado(scene, gameObject, pontuacao, valor, stats, sound, note) {
     if (stats.hasOwnProperty(itemKey)) {
         stats[itemKey]++;
     }
-    
+
     sound.triggerAttackRelease(note, "8n");
-    
+
     if (valor < 0) {
         scene.cameras.main.shake(100, 0.01);
     }
@@ -341,17 +257,17 @@ function itemColetado(scene, gameObject, pontuacao, valor, stats, sound, note) {
         lifespan: 400,
         gravityY: 200
     });
-    
+
     gameObject.destroy();
     setTimeout(() => emitter.destroy(), 500);
-    
+
     let novaPontuacao = pontuacao + valor;
     return Math.max(0, novaPontuacao);
 }
 
 function showGameOverScreen(scene, score, stats) {
     const overlay = scene.add.rectangle(0, 0, scene.cameras.main.width, scene.cameras.main.height, 0x000000, 0.7).setOrigin(0).setDepth(200);
-    
+
     const boxWidth = 400;
     const boxHeight = 480;
     const boxX = scene.cameras.main.centerX - boxWidth / 2;
@@ -364,22 +280,22 @@ function showGameOverScreen(scene, score, stats) {
 
     scene.add.text(scene.cameras.main.centerX, boxY + 40, 'Fim de Jogo!', { fontSize: '42px', fill: '#fff', fontFamily: '"Poppins"' }).setOrigin(0.5).setDepth(202);
     scene.add.text(scene.cameras.main.centerX, boxY + 100, `Pontuação Final: ${score}`, { fontSize: '28px', fill: '#00a9e0', fontFamily: '"Poppins"' }).setOrigin(0.5).setDepth(202);
-    
+
     let statsText = 'Itens Coletados:\n\n';
-    statsText += `Computador: ${stats.computador}\n`;
-    statsText += `Rato: ${stats.mouse}\n`;
+    statsText += `Monitor: ${stats.computador}\n`;
+    statsText += `Mouse: ${stats.mouse}\n`;
     statsText += `Teclado: ${stats.teclado}\n`;
     statsText += `Logo SENAC: ${stats.senac}\n`;
     statsText += `Relógio: ${stats.relogio}\n`;
     statsText += `Vírus: ${stats.virus}`;
-    
+
     scene.add.text(scene.cameras.main.centerX, boxY + 230, statsText, { fontSize: '20px', fill: '#fff', fontFamily: '"Poppins"', align: 'center', lineSpacing: 8 }).setOrigin(0.5).setDepth(202);
 
     const buttonX = scene.cameras.main.centerX;
     const buttonY = boxY + boxHeight - 60;
-    const playAgainButton = scene.add.text(buttonX, buttonY, 'Jogar Novamente', { 
-        fontSize: '24px', 
-        fill: '#fff', 
+    const playAgainButton = scene.add.text(buttonX, buttonY, 'Jogar Novamente', {
+        fontSize: '24px',
+        fill: '#fff',
         fontFamily: '"Poppins"',
         backgroundColor: '#00a9e0',
         padding: { x: 20, y: 10 },
